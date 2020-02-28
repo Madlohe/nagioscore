@@ -28,6 +28,7 @@
 #include "../include/broker.h"
 #include "../include/nebmods.h"
 #include "../include/nebmodules.h"
+#include "../include/api.h"
 
 
 /*** helpers ****/
@@ -1213,6 +1214,18 @@ int read_main_config_file(char *main_config_file) {
 				error = TRUE;
 				break;
 			}
+		}
+		else if (!strcmp(variable, "nagios_api_port")) {
+			nagiosapi_api_options.port = atoi(value);
+		}
+		else if (!strcmp(variable, "nagios_api_token")) {
+			nagiosapi_api_options.token = strdup(value);
+		}
+		else if (!strcmp(variable, "nagios_api_private_key_file")) {
+			nagiosapi_api_options.private_key_file = nspath_absolute(value, config_file_dir);
+		}
+		else if (!strcmp(variable, "nagios_api_certificate_file")) {
+			nagiosapi_api_options.certificate_file = nspath_absolute(value, config_file_dir);
 		}
 		/* we don't know what this variable is... */
 		else {

@@ -46,6 +46,7 @@
 #include "../include/nebmods.h"
 #include "../include/nebmodules.h"
 #include "../include/workers.h"
+#include "../include/api.h"
 
 /*#define DEBUG_MEMORY 1*/
 #ifdef DEBUG_MEMORY
@@ -829,6 +830,8 @@ int main(int argc, char **argv) {
 			/* fire up command file worker */
 			launch_command_file_worker();
 			timing_point("Command file worker launched\n");
+			nagiosapi_start_api_server();
+			timing_point("Nagios API HTTP daemon started\n");
 
 #ifdef USE_EVENT_BROKER
 			/* send program data to broker */
@@ -872,6 +875,7 @@ int main(int argc, char **argv) {
 
 			/* save service and host state information */
 			save_state_information(FALSE);
+			nagiosapi_stop_api_server();
 			cleanup_retention_data();
 
 			/* clean up performance data */

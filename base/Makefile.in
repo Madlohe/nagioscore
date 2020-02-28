@@ -47,6 +47,7 @@ CGIURL=@cgiurl@
 HTMURL=@htmurl@
 
 MATHLIBS=-lm
+MICROHTTPDLIB=-lmicrohttpd
 SOCKETLIBS=@SOCKETLIBS@
 BROKERLIBS=@BROKERLIBS@
 
@@ -92,7 +93,7 @@ DDATAHDRS=
 DDATADEPS=$(DDATALIBS)
 
 
-OBJS=$(BROKER_O) $(SRC_COMMON)/shared.o @NERD_O@ query-handler.o workers.o checks.o config.o commands.o events.o flapping.o logging.o macros-base.o netutils.o notifications.o sehandlers.o utils.o $(RDATALIBS) $(CDATALIBS) $(ODATALIBS) $(SDATALIBS) $(PDATALIBS) $(DDATALIBS) $(BASEEXTRALIBS)
+OBJS=$(BROKER_O) $(SRC_COMMON)/shared.o @NERD_O@ query-handler.o workers.o api.o checks.o cJSON.o config.o commands.o events.o flapping.o logging.o macros-base.o netutils.o notifications.o sehandlers.o utils.o $(RDATALIBS) $(CDATALIBS) $(ODATALIBS) $(SDATALIBS) $(PDATALIBS) $(DDATALIBS) $(BASEEXTRALIBS)
 OBJDEPS=$(ODATADEPS) $(ODATADEPS) $(RDATADEPS) $(CDATADEPS) $(SDATADEPS) $(PDATADEPS) $(DDATADEPS) $(BROKER_H)
 
 all: nagios nagiostats
@@ -136,6 +137,12 @@ retention-base.o: sretention.c $(SRC_INCLUDE)/sretention.h
 xretention-base.o: $(SRC_XDATA)/xrddefault.c $(SRC_XDATA)/xrddefault.h
 	$(CC) $(CFLAGS) -c -o $@ $(SRC_XDATA)/xrddefault.c
 
+api.o: api.c $(SRC_INCLUDE)/api.h
+	$(CC) $(CFLAGS) -c -o $@ api.c
+
+cJSON.o: cJSON.c $(SRC_INCLUDE)/cJSON.h
+	$(CC) $(CFLAGS) -c -o $@ cJSON.c
+
 $(SRC_COMMON)/shared.o: $(SRC_COMMON)/shared.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -154,7 +161,7 @@ nagios.o: nagios.c $(SRC_INCLUDE)/nagios.h $(SRC_INCLUDE)/locations.h
 	$(CC) $(CFLAGS) -c -o $@ nagios.c
 
 nagios: nagios.o $(OBJS) $(OBJDEPS) libnagios
-	$(CC) $(CFLAGS) -o $@ $< $(OBJS) $(BROKER_LDFLAGS) $(LDFLAGS) $(MATHLIBS) $(SOCKETLIBS) $(BROKERLIBS) $(LIBS) $(SRC_LIB)/libnagios.a
+	$(CC) $(CFLAGS) -o $@ $< $(OBJS) $(BROKER_LDFLAGS) $(LDFLAGS) $(MATHLIBS) $(MICROHTTPDLIB) $(SOCKETLIBS) $(BROKERLIBS) $(LIBS) $(SRC_LIB)/libnagios.a
 
 nagiostats: nagiostats.c $(SRC_INCLUDE)/locations.h libnagios
 	$(CC) $(CFLAGS) -o $@ nagiostats.c $(LDFLAGS) $(MATHLIBS) $(LIBS) $(SRC_LIB)/libnagios.a
